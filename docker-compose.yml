@@ -1,24 +1,28 @@
 version: '3.4'
 
 services:
-  massa-node:
+  node:
     image: 'massa-node'
     build:
       context: .
       target: massa-node
     restart: always
+    ports:
+      - '33033:33033'
+      - '31234:31234'
+      - '31235:31235'
     volumes:
       - node-config:/massa/massa-node/config/
       - node-block_store:/massa/massa-node/block_store/
 
-  massa-client:
+  client:
     image: 'massa-client'
     build:
       context: .
       target: massa-client
     restart: on-failure
     depends_on: 
-      - massa-node
+      - node
     volumes:
       - client-config:/massa/massa-client/config/
 

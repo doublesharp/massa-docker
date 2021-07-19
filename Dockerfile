@@ -1,8 +1,10 @@
-FROM ubuntu:bionic as build-stage
+FROM phusion/baseimage:focal-1.0.0 as massa-base
 
 ARG GIT_URL=https://gitlab.com/massalabs/massa.git
 ARG RUST_VERSION=nightly
 ARG RUST_BACKTRACE=full
+
+ARG DEBIAN_FRONTEND=noninteractive
 
 ENV PATH=${PATH}:/root/.cargo/bin
 
@@ -15,34 +17,38 @@ RUN set -xe; \
   curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain none -y; \
   rustup install "$RUST_VERSION" && rustup default "$RUST_VERSION"; \
   # clone the repo
-  git clone "$GIT_URL" /massa; \
+  git clone "$GIT_URL" /massa;
+
+# Massa client
+FROM massa-base as massa-client
+
+WORKDIR /massa/massa-client
+
+RUN set -xe; \
   # build
-  cd /massa/massa-node; cargo build --release; \
-  cd /massa/massa-client; cargo build --release;
+  cargo build --release; 
 
-# Massa base image
-FROM build-stage as massa
+COPY ./bin/massa-client-entrypoint.sh /usr/local/bin/massa-client-entrypoint.sh
+COPY ./bin/massa-wallet.sh /usr/local/bin/massa-wallet
 
-# copy the binary 
-COPY --from=build-stage /massa /massa
+VOLUME /massa/massa-client/config
+
+ENTRYPOINT [ "massa-client-entrypoint.sh" ]
+
+CMD ["massa-wallet"]
 
 # Massa node
-FROM massa as massa-node
+FROM massa-base as massa-node
 
 WORKDIR /massa/massa-node
+
+RUN set -xe; \
+  # build
+  cargo build --release; 
+
+COPY ./bin/massa-node.sh /usr/local/bin/massa-node
 
 VOLUME /massa/massa-node/block_store
 VOLUME /massa/massa-node/config
 
-CMD ["cargo", "run", "--release"]
-
-# Massals client
-FROM massa as massa-client
-
-COPY ./bin/massa.sh /usr/local/bin/massa
-
-WORKDIR /massa/massa-client
-
-VOLUME /massa/massa-client/config
-
-CMD ["cargo", "run", "--release", "--", "--wallet", "./config/wallet.dat"]
+CMD ["massa-node"]

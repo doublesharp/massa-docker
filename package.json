@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "Docker image for Massa",
   "scripts": {
-    "client": "docker-compose run massa-client bash",
-    "node": "docker-compose up -d massa-node"
+    "client": "docker-compose build client; docker-compose run --rm client",
+    "node": "docker-compose up -d --build node",
+    "logs": "docker-compose logs -f",
+    "down": "docker-compose down"
   }
 }
