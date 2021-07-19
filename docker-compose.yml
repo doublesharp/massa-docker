@@ -8,7 +8,6 @@ services:
       target: massa-node
     restart: always
     ports:
-      - '33033:33033'
       - '31234:31234'
       - '31235:31235'
     volumes:

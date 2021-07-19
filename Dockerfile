@@ -46,9 +46,12 @@ RUN set -xe; \
   # build
   cargo build --release; 
 
+COPY ./bin/massa-node-entrypoint.sh /usr/local/bin/massa-node-entrypoint.sh
 COPY ./bin/massa-node.sh /usr/local/bin/massa-node
 
 VOLUME /massa/massa-node/block_store
 VOLUME /massa/massa-node/config
+
+ENTRYPOINT [ "massa-node-entrypoint.sh" ]
 
 CMD ["massa-node"]
