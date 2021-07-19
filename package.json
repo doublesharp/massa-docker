@@ -1,0 +1,9 @@
+{
+  "name": "massa-docker",
+  "version": "1.0.0",
+  "description": "Docker image for Massa",
+  "scripts": {
+    "client": "docker-compose run massa-client ash",
+    "node": "docker-compose up -d massa-node"
+  }
+}

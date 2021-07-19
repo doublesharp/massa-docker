@@ -1,0 +1,3 @@
+volumes/client/config
+volumes/node/block_store
+volumes/node/config

@@ -1,0 +1,44 @@
+version: '3.4'
+
+services:
+  massa-node:
+    image: 'massa-node'
+    build:
+      context: .
+      target: massa-node
+    restart: always
+    volumes:
+      - node-config:/massa/massa-node/config/
+      - node-block_store:/massa/massa-node/block_store/
+
+  massa-client:
+    image: 'massa-client'
+    build:
+      context: .
+      target: massa-client
+    restart: on-failure
+    depends_on: 
+      - massa-node
+    volumes:
+      - client-config:/massa/massa-client/config/
+
+volumes: 
+  node-config:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: './volumes/node/config'
+  node-block_store:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: './volumes/node/block_store'
+  client-config:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: './volumes/client/config'
+      
