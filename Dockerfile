@@ -1,4 +1,4 @@
-FROM alpine:3.13 as build-stage
+FROM ubuntu:bionic as build-stage
 
 ARG GIT_URL=https://gitlab.com/massalabs/massa.git
 ARG RUST_VERSION=nightly
@@ -9,25 +9,19 @@ ENV PATH=${PATH}:/root/.cargo/bin
 # dependencies
 RUN set -xe; \
   # build tools
-  apk add --no-cache --virtual .build-deps \
-  autoconf automake libtool make gcc libgcc musl-dev build-base curl git openssl openssl-dev; \
+  apt update; \
+  apt install -y bash pkg-config curl git build-essential libssl-dev; \
   # rust
   curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain none -y; \
   rustup install "$RUST_VERSION" && rustup default "$RUST_VERSION"; \
-  source $HOME/.cargo/env; \
   # clone the repo
   git clone "$GIT_URL" /massa; \
   # build
   cd /massa/massa-node; cargo build --release; \
   cd /massa/massa-client; cargo build --release;
-# remove our build dependencies 
-# apk del .build-deps;
 
 # Massa base image
 FROM build-stage as massa
-
-# install deps
-RUN apk add --no-cache ca-certificates libgcc
 
 # copy the binary 
 COPY --from=build-stage /massa /massa
