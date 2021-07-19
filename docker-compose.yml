@@ -2,10 +2,7 @@ version: '3.4'
 
 services:
   node:
-    image: 'massa-node'
-    build:
-      context: .
-      target: massa-node
+    image: 'doublesharp/massa-node:latest'
     restart: always
     ports:
       - '31234:31234'
@@ -15,10 +12,7 @@ services:
       - node-block_store:/massa/massa-node/block_store/
 
   client:
-    image: 'massa-client'
-    build:
-      context: .
-      target: massa-client
+    image: 'doublesharp/massa-client:latest'
     restart: on-failure
     depends_on: 
       - node

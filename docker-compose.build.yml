@@ -1,0 +1,14 @@
+version: '3.4'
+
+services:
+  node:
+    image: 'doublesharp/massa-node'
+    build:
+      context: .
+      target: massa-node
+
+  client:
+    image: 'doublesharp/massa-client'
+    build:
+      context: .
+      target: massa-client

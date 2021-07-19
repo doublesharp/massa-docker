@@ -4,7 +4,9 @@
   "description": "Docker image for Massa",
   "scripts": {
     "client": "docker-compose build client; docker-compose run --rm client",
-    "node": "docker-compose up -d --build node",
+    "client-build": "docker-compose  -f docker-compose.yml -f docker-compose.build.yml build client; docker-compose  -f docker-compose.yml -f docker-compose.build.yml run --rm client",
+    "node": "docker-compose up -d node",
+    "node-build": "docker-compose -f docker-compose.yml -f docker-compose.build.yml up -d --build node",
     "logs": "docker-compose logs -f",
     "down": "docker-compose down"
   }
